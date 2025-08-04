@@ -8,6 +8,7 @@ import { error } from 'console';
 import { EncryptionService } from 'src/common/services/encryption.service';
 import { TokenService } from 'src/common/services/token.service';
 import { EnvConfigService } from 'src/common/config/env.config';
+import { ValidationUtils } from 'src/common/utils/validation.utils';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
         private readonly prisma: PrismaService,
         private readonly EncSr: EncryptionService,
         private readonly tokenSr: TokenService
+
     ) { }
     async signup(signupDto: SignupDto) {
 
@@ -31,6 +33,10 @@ export class AuthService {
         //     },
         // });
         // if (authError || !authData.user) throw new ConflictException(authError?.message || 'User not created');        console.log('my Payload', signupDto)
+        if (!ValidationUtils.isValidEmail(signupDto.email)) { throw new BadRequestException("invalid Email format") }
+        if (!ValidationUtils.isValidPassword(signupDto.password)) {
+            throw new BadRequestException("Invalid password. Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.");
+        }
         const existingUser = await this.prisma.users.findUnique({
             where: { email: signupDto.email },
         });
@@ -60,18 +66,22 @@ export class AuthService {
             userData.preferencesId = userPreferencesData.id
         }
         return {
-            statusCode : HttpStatus.CREATED,
+            statusCode: HttpStatus.CREATED,
             message: "User has been created.",
-            user : {
-                id :userData.id,
-                fullname : userData.fullName,
-                email : userData.email,
-                role : userData.role
+            user: {
+                id: userData.id,
+                fullname: userData.fullName,
+                email: userData.email,
+                role: userData.role
             }
         };
     }
     async signin(signinDto: SigninDto) {
         const { email, password } = signinDto
+        if (!ValidationUtils.isValidEmail(signinDto.email)) { throw new BadRequestException("invalid Email format") }
+        if (!ValidationUtils.isValidPassword(signinDto.password)) {
+            throw new BadRequestException("Invalid password. Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.");
+        }
         let user = await this.prisma.users.findUnique({
             where: { email }
         })
