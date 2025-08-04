@@ -1,12 +1,13 @@
-import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
 import { Role } from "../enums/role.enum";
-
+import { UserPreferencesDto } from "./userPreference.dto";
+import { Optional } from "@nestjs/common";
 
 export class SignupDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
 
   @IsString()
   @IsNotEmpty()
@@ -24,20 +25,8 @@ export class SignupDto {
   @IsEnum(Role)
   role: Role;
 
-}
-
-
-export class UserPreferencesDto {
-  @IsNumber()
-  @IsNotEmpty()
-  last_zakat_date: number;
-  
-  @IsBoolean()
-  @IsNotEmpty()
-  recive_zakat_remainder: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  stay_updated_on_new_campaigns: boolean;
-
+  @ValidateNested()
+  @Optional()
+  @Type(() => UserPreferencesDto)
+  userPreferences: UserPreferencesDto;
 }
