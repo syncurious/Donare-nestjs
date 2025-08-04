@@ -1,9 +1,9 @@
-import { IsBoolean, isDate, IsNotEmpty, IsNumber ,IsDate} from "class-validator";
+import { IsBoolean, IsNotEmpty, IsDateString } from "class-validator";
 
 export class UserPreferencesDto {
-    @IsDate()
+    @IsDateString()
     @IsNotEmpty()
-    lastZakatDate: Date;
+    lastZakatDate: string;
     
     @IsBoolean()
     @IsNotEmpty()

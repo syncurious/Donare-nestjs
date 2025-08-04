@@ -1,12 +1,22 @@
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, NotFoundException, BadRequestException, HttpStatus } from '@nestjs/common';
 import { SupabaseService } from 'src/config/supabase/supabase.service';
 import { SignupDto } from './dto/signup.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserPreferencesDto } from './dto/userPreference.dto';
+import { LoginResponseDTO, SigninDto } from './dto/signin.dto';
+import { error } from 'console';
+import { EncryptionService } from 'src/common/services/encryption.service';
+import { TokenService } from 'src/common/services/token.service';
+import { EnvConfigService } from 'src/common/config/env.config';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly supabase: SupabaseService, private readonly prisma: PrismaService) { }
+    constructor(
+        private readonly env: EnvConfigService,
+        private readonly prisma: PrismaService,
+        private readonly EncSr: EncryptionService,
+        private readonly tokenSr: TokenService
+    ) { }
     async signup(signupDto: SignupDto) {
 
         // const { data: authData, error: authError } = await this.supabase.getClient().auth.signUp({
@@ -27,10 +37,11 @@ export class AuthService {
         if (existingUser) {
             throw new ConflictException('A user with this email already exists.');
         }
+        const encryptedPassword = await this.EncSr.hashPassword(signupDto.password)
         const userData = await this.prisma.users.create({
             data: {
                 email: signupDto.email,
-                password: signupDto.password,
+                password: encryptedPassword,
                 fullName: signupDto.fullName,
                 city: signupDto.city,
                 role: signupDto.role,
@@ -49,8 +60,39 @@ export class AuthService {
             userData.preferencesId = userPreferencesData.id
         }
         return {
-            userData,
+            statusCode : HttpStatus.CREATED,
+            message: "User has been created.",
+            user : {
+                id :userData.id,
+                fullname : userData.fullName,
+                email : userData.email,
+                role : userData.role
+            }
         };
+    }
+    async signin(signinDto: SigninDto) {
+        const { email, password } = signinDto
+        let user = await this.prisma.users.findUnique({
+            where: { email }
+        })
+        if (!user) { throw new NotFoundException(`can't found User with this Email`) }
+        const isCorrectPassword = await this.EncSr.comparePassword(password, user.password)
+        if (!isCorrectPassword) { throw new BadRequestException(`Incorrect password`) }
+        const userTokenPayload = { userId: user.id, role: user.role, email: user.email }
+        const token = this.tokenSr.generateJWTToken(userTokenPayload, this.env.jwtSecret, '7d')
+        const refrashToken = this.tokenSr.generateJWTToken(userTokenPayload, this.env.jwtSecret, '30d')
+
+        const userResponse = LoginResponseDTO.create(token, {
+            id: user.id,
+            email: user.email,
+            city: user.city,
+            role: user.role,
+            fullName: user.fullName,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        }, refrashToken)
+
+        return userResponse;
     }
 
 }

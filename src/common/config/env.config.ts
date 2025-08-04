@@ -17,11 +17,11 @@ export interface EnvironmentConfig {
   SUPABASE_KEY?: string;
   
   // Other services
-  REDIS_URL?: string;
-  SMTP_HOST?: string;
-  SMTP_PORT?: number;
-  SMTP_USER?: string;
-  SMTP_PASS?: string;
+  // REDIS_URL?: string;
+  // SMTP_HOST?: string;
+  // SMTP_PORT?: number;
+  // SMTP_USER?: string;
+  // SMTP_PASS?: string;
 }
 
 @Injectable()
@@ -54,11 +54,11 @@ export class EnvConfigService {
       NODE_ENV: process.env.NODE_ENV as 'development' | 'production' | 'test',
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_KEY: process.env.SUPABASE_KEY,
-      REDIS_URL: process.env.REDIS_URL,
-      SMTP_HOST: process.env.SMTP_HOST,
-      SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : undefined,
-      SMTP_USER: process.env.SMTP_USER,
-      SMTP_PASS: process.env.SMTP_PASS,
+      // REDIS_URL: process.env.REDIS_URL,
+      // SMTP_HOST: process.env.SMTP_HOST,
+      // SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : undefined,
+      // SMTP_USER: process.env.SMTP_USER,
+      // SMTP_PASS: process.env.SMTP_PASS,
     };
   }
 
@@ -107,26 +107,26 @@ export class EnvConfigService {
   }
 
   // Redis
-  get redisUrl(): string | undefined {
-    return this.config.REDIS_URL;
-  }
+  // get redisUrl(): string | undefined {
+  //   return this.config.REDIS_URL;
+  // }
 
-  // SMTP
-  get smtpHost(): string | undefined {
-    return this.config.SMTP_HOST;
-  }
+  // // SMTP
+  // get smtpHost(): string | undefined {
+  //   return this.config.SMTP_HOST;
+  // }
 
-  get smtpPort(): number | undefined {
-    return this.config.SMTP_PORT;
-  }
+  // get smtpPort(): number | undefined {
+  //   return this.config.SMTP_PORT;
+  // }
 
-  get smtpUser(): string | undefined {
-    return this.config.SMTP_USER;
-  }
+  // get smtpUser(): string | undefined {
+  //   return this.config.SMTP_USER;
+  // }
 
-  get smtpPass(): string | undefined {
-    return this.config.SMTP_PASS;
-  }
+  // get smtpPass(): string | undefined {
+  //   return this.config.SMTP_PASS;
+  // }
 
   // Get all config (useful for testing or debugging)
   getAll(): EnvironmentConfig {
