@@ -3,9 +3,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EncryptionService {
-  async hashPassword(password: string): Promise<string> {
-    const saltRounds = 10;
-    return await bcrypt.hash(password, saltRounds);
+  async hashPassword(password: string, hashSalt: number = 10): Promise<string> {
+    return await bcrypt.hash(password, hashSalt);
   }
 
   async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
