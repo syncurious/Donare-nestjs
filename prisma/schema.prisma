@@ -25,6 +25,7 @@ model Users {
   updatedAt DateTime @updatedAt
   preferences UserPreferences?
   preferencesId String?
+  donations  Donations[]
 }
 
 model UserPreferences {
@@ -36,4 +37,57 @@ model UserPreferences {
   stayUpdatedOnNewCampaigns Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Donations {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int
+  status    DonationStatus @default(COMPLETED)
+  donationType DonationType
+  description String?
+  
+  // Zakat specific fields
+  zakatYear Int?
+  zakatCalculationMethod String? // "GOLD", "SILVER", "CASH", "INVESTMENTS", etc.
+  zakatAssetsValue Int?
+  
+  
+  // Fitrah specific fields
+  fitrahYear Int?
+  fitrahCalculationMethod String? // "DATES", "WHEAT", "BARLEY", "RAISINS", "CASH"
+  fitrahAmount Int?
+  
+  // Transaction details
+  transactionId String?
+  paymentMethod String?
+  paymentStatus PaymentStatus @default(COMPLETED)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum DonationType {
+  ZAKAT
+  SADAQAH
+  FITRAH
+  CAMPAIGN
+  OTHER
+}
+
+enum DonationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
 }
