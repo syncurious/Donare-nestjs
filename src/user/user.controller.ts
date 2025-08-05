@@ -18,7 +18,11 @@ export class UserController {
         const user: JWTAuthPayload = req['user'];
         return this.userService.getPreferences(user);
     }
-
+    @Patch('profile')
+    async updateLastZakatDate(@Req() req: Request) {
+        const user: JWTAuthPayload = req['user'];
+        return this.userService.updateUserProfile(user, req.body);
+    }
     @Patch('preferences')
     async updatePreferences(@Req() req: Request) {
         const user: JWTAuthPayload = req['user'];
