@@ -35,6 +35,16 @@ export class UserService {
 
         return this.res.formatResponse(userData, undefined, true, HttpStatus.OK);
     }
+    async getPreferences(user: JWTAuthPayload) {
+        const { userId } = user
+        const userData = await this.prisma.userPreferences.findUnique({
+            where: { userId: userId },
+        });
+        if (!userData) {
+            return this.res.formatResponse(null, 'User preferences not found', false, HttpStatus.NOT_FOUND);
+        }
+        return this.res.formatResponse(userData, undefined, true, HttpStatus.OK);
+    }
     async updatePreferences(user: JWTAuthPayload, body: UserPreferencesDto) {
         const { userId } = user
 

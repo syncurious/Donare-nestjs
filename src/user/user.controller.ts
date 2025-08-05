@@ -13,6 +13,12 @@ export class UserController {
         return this.userService.getUserProfile(user);
     }
 
+    @Get('preferences')
+    async getPreferences(@Req() req: Request) {
+        const user: JWTAuthPayload = req['user'];
+        return this.userService.getPreferences(user);
+    }
+
     @Patch('preferences')
     async updatePreferences(@Req() req: Request) {
         const user: JWTAuthPayload = req['user'];
