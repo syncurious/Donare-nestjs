@@ -5,6 +5,7 @@ import { EnvConfigService } from './config/env.config';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { AuthGuard } from './guards/auth.guard';
 import { CustomValidationPipe } from './pipes/validation.pipe';
+import { ResponseService } from './services/response.service';
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import { CustomValidationPipe } from './pipes/validation.pipe';
     LoggingInterceptor,
     AuthGuard,
     CustomValidationPipe,
+    ResponseService,
   ],
   exports: [
     EncryptionService,
@@ -22,6 +24,7 @@ import { CustomValidationPipe } from './pipes/validation.pipe';
     LoggingInterceptor,
     AuthGuard,
     CustomValidationPipe,
+    ResponseService,
   ],
 })
 export class CommonModule {} 

@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './config/prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthMiddleware } from './common/middleware/auth.middleware';
     AuthModule, 
     PrismaModule,
     UserModule,
+    CommonModule,
   ],
 })
 export class AppModule {

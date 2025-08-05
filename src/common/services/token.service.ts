@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 
-interface JWTPayload {
+export interface JWTAuthPayload {
   userId: string;
   email: string;
   role?: string;
@@ -10,21 +10,21 @@ interface JWTPayload {
 
 @Injectable()
 export class TokenService {
-  generateJWTToken(payload: JWTPayload, secretKey: string, expiresIn: string = '24h'): string {
+  generateJWTToken(payload: JWTAuthPayload, secretKey: string, expiresIn: string = '24h'): string {
     return jwt.sign(payload, secretKey, { expiresIn } as jwt.SignOptions);
   }
 
-  async verifyJWTToken(token: string, secretKey: string): Promise<JWTPayload> {
+  async verifyJWTToken(token: string, secretKey: string): Promise<JWTAuthPayload> {
     try {
-      return jwt.verify(token, secretKey) as JWTPayload;
+      return jwt.verify(token, secretKey) as JWTAuthPayload;
     } catch (error) {
       throw new Error('Invalid token');
     }
   }
 
-  async decodeJWTToken(token: string): Promise<JWTPayload | null> {
+  async decodeJWTToken(token: string): Promise<JWTAuthPayload | null> {
     try {
-      return jwt.decode(token) as JWTPayload;
+      return jwt.decode(token) as JWTAuthPayload;
     } catch (error) {
       return null;
     }
