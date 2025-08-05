@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Patch, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { UserService } from './user.service';
 import { JWTAuthPayload } from 'src/common/services/token.service';
@@ -9,8 +9,13 @@ export class UserController {
 
     @Get('profile')
     async getUserProfile(@Req() req: Request) {
-        const token = req['token'];
-        const user :JWTAuthPayload= req['user']
-        return this.userService.getUserProfile(token, user);
+        const user: JWTAuthPayload = req['user']
+        return this.userService.getUserProfile(user);
+    }
+
+    @Patch('preferences')
+    async updatePreferences(@Req() req: Request) {
+        const user: JWTAuthPayload = req['user'];
+        return this.userService.updatePreferences(user, req.body);
     }
 }

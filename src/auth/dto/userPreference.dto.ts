@@ -3,11 +3,11 @@ import { IsBoolean, IsNotEmpty, IsDateString } from "class-validator";
 export class UserPreferencesDto {
     @IsDateString()
     @IsNotEmpty()
-    lastZakatDate: string;
+    lastZakatDate: Date;
     
     @IsBoolean()
     @IsNotEmpty()
-    receiveZakatRemainder: boolean;
+    receiveZakatRemainder: boolean; 
   
     @IsBoolean() 
     @IsNotEmpty()
