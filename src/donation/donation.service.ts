@@ -1,5 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../config/prisma/prisma.service';
+import { ResponseService } from '../common/services/response.service';
 import { 
   CreateDonationDto, 
   DonationResponseDto, 
@@ -13,7 +14,10 @@ import {
 
 @Injectable()
 export class DonationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private responseService: ResponseService
+  ) {}
 
   async createDonation(userId: string, donationDto: CreateDonationDto): Promise<DonationResponseDto> {
     // Validate donation in kind requirements
@@ -175,25 +179,39 @@ export class DonationService {
     });
 
     if (!donation) {
-      throw new Error('Donation not found');
+      throw new NotFoundException('Donation not found');
     }
 
     return this.mapToResponseDto(donation);
   }
 
   async updateDonation(id: string, updateDto: UpdateDonationDto): Promise<DonationResponseDto> {
-    const donation = await this.prisma.donations.update({
-      where: { id },
-      data: updateDto,
-    });
+    try {
+      const donation = await this.prisma.donations.update({
+        where: { id },
+        data: updateDto,
+      });
 
-    return this.mapToResponseDto(donation);
+      return this.mapToResponseDto(donation);
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Donation not found');
+      }
+      throw error;
+    }
   }
 
   async deleteDonation(id: string): Promise<void> {
-    await this.prisma.donations.delete({
-      where: { id },
-    });
+    try {
+      await this.prisma.donations.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Donation not found');
+      }
+      throw error;
+    }
   }
 
   // Helper method to map Prisma model to response DTO
