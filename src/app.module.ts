@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { CommonModule } from './common/common.module';
 import { DonationModule } from './donation/donation.module';
+import { VolunteerModule } from './volunteer/volunteer.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DonationModule } from './donation/donation.module';
     UserModule,
     CommonModule,
     DonationModule,
+    VolunteerModule,
   ],
 })
 export class AppModule {
@@ -29,7 +31,9 @@ export class AppModule {
         { path: 'donations', method: RequestMethod.ALL },
         { path: 'donations/*', method: RequestMethod.ALL },
         { path: 'user', method: RequestMethod.ALL },
-        { path: 'user/*', method: RequestMethod.ALL }
+        { path: 'user/*', method: RequestMethod.ALL },
+        { path: 'volunteer', method: RequestMethod.ALL },
+        { path: 'volunteer/*', method: RequestMethod.ALL }
       );
   }
 }
