@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { CommonModule } from './common/common.module';
 import { DonationModule } from './donation/donation.module';
+import { VolunteerModule } from './volunteer/volunteer.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DonationModule } from './donation/donation.module';
     UserModule,
     CommonModule,
     DonationModule,
+    VolunteerModule,
   ],
 })
 export class AppModule {
