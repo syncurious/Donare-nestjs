@@ -142,3 +142,19 @@ model HelpRequests {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Causes {
+  id        String   @id @default(uuid())
+  name      String
+  description String
+  media     String?
+  mediaType MediaType
+  status    Status   @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
