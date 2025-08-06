@@ -29,6 +29,7 @@ model Users {
   preferencesId  String?
   donations      Donations[]
   Volunteers     Volunteers?
+  HelpRequests    HelpRequests[]
 }
 
 model UserPreferences {
@@ -120,6 +121,24 @@ model Volunteers {
   email     String
   skills    String
   message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HelpRequests {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    Status   @default(PENDING)
+  message   String
+  fullName  String
+  phone     String?
+  address   String?
+  city      String?
+  zipCode   String?
+  country   String?
+  description String?
+  image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
