@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { DonationModule } from './donation/donation.module';
 import { VolunteerModule } from './volunteer/volunteer.module';
 import { HelpRequestModule } from './help-request/help-request.module';
+import { CausesModule } from './causes/causes.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { HelpRequestModule } from './help-request/help-request.module';
     DonationModule,
     VolunteerModule,
     HelpRequestModule,
+    CausesModule,
   ],
 })
 export class AppModule {
