@@ -12,4 +12,8 @@ export class UserProfileDto {
     @IsString()
     @IsNotEmpty()
     phone: string;
+
+    @IsString()
+    @IsNotEmpty()
+    profilePicture: string;
 }

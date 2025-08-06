@@ -22,6 +22,8 @@ export class UserService {
                 fullName: true,
                 role: true,
                 city: true,
+                phone: true,
+                profilePicture: true,
                 createdAt: true,
                 updatedAt: true,
                 preferences: {
@@ -53,6 +55,8 @@ export class UserService {
             data: {
                 fullName: body.fullName,
                 email: body.email,
+                phone: body.phone,
+                profilePicture: body.profilePicture,
             }
         });
         if (!userData) {

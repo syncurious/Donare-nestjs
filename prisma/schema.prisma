@@ -21,6 +21,8 @@ model Users {
   fullName  String
   city      String
   role      String
+  phone     String?
+  profilePicture String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   preferences UserPreferences?
