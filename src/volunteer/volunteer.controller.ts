@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, NotFoundException, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, NotFoundException, Post, Request } from '@nestjs/common';
 import { VolunteerService } from './volunteer.service';
 import { RegisterVolunteerDto } from './dto/volunteer.dto';
 import { ResponseService } from 'src/common/services/response.service';
@@ -23,6 +23,21 @@ export class VolunteerController {
             'Success',
             true,
             HttpStatus.CREATED
+        );
+    }
+
+    @Get()
+    async getMyForm(@Request() req) {
+        if (!req.user || !req.user.userId) {
+            throw new NotFoundException('User not authenticated');
+        }
+        const userId = req.user.userId
+        const response = await this.volunteerService.getMyForm(userId)
+        return this.res.formatResponse(
+            response,
+            'Success',
+            true,
+            HttpStatus.OK
         );
     }
 }

@@ -24,4 +24,10 @@ export class VolunteerService {
         });
         return volunteer;
     }
+    async getMyForm(userId: string) {
+        const volunteer = await this.prisma.volunteers.findUnique({
+            where: { userId },
+        });
+        return volunteer;
+    }
 }
