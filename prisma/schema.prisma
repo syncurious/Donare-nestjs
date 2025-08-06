@@ -30,6 +30,7 @@ model Users {
   donations      Donations[]
   Volunteers     Volunteers?
   HelpRequests    HelpRequests[]
+  Causes          Causes[]
 }
 
 model UserPreferences {
@@ -150,6 +151,8 @@ enum MediaType {
 
 model Causes {
   id        String   @id @default(uuid())
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   description String
   media     String?

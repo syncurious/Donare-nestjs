@@ -39,7 +39,9 @@ export class AppModule {
         { path: 'volunteer', method: RequestMethod.ALL },
         { path: 'volunteer/*', method: RequestMethod.ALL },
         { path: 'help-request', method: RequestMethod.ALL },
-        { path: 'help-request/*', method: RequestMethod.ALL }
+        { path: 'help-request/*', method: RequestMethod.ALL },
+        { path: 'causes', method: RequestMethod.ALL },
+        { path: 'causes/*', method: RequestMethod.ALL },
       );
   }
 }
