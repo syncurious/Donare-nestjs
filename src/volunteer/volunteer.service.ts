@@ -1,4 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { RegisterVolunteerDto } from './dto/volunteer.dto';
+import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
-export class VolunteerService {}
+export class VolunteerService {
+    constructor (
+        private readonly prisma : PrismaService
+    ){}
+    async registerVolunteer(body: RegisterVolunteerDto, userId: string) {
+        const existingVolunteer = await this.prisma.volunteers.findUnique({
+            where: { userId },
+          });
+        
+          if (existingVolunteer) {
+            throw new BadRequestException('Volunteer already registered with this user ID');
+          }
+        
+        const volunteer = await this.prisma.volunteers.create({
+            data: {
+                ...body,
+                userId,
+            },
+        });
+        return volunteer;
+    }
+}

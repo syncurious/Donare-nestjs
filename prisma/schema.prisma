@@ -15,64 +15,65 @@ datasource db {
 }
 
 model Users {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  fullName  String
-  city      String
-  role      String
-  phone     String?
+  id             String           @id @default(uuid())
+  email          String           @unique
+  password       String
+  fullName       String
+  city           String
+  role           String
+  phone          String?
   profilePicture String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  preferences UserPreferences?
-  preferencesId String?
-  donations  Donations[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  preferences    UserPreferences?
+  preferencesId  String?
+  donations      Donations[]
+  Volunteers     Volunteers?
 }
 
 model UserPreferences {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lastZakatDate DateTime
-  receiveZakatRemainder Boolean
+  id                        String   @id @default(uuid())
+  userId                    String   @unique
+  user                      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastZakatDate             DateTime
+  receiveZakatRemainder     Boolean
   stayUpdatedOnNewCampaigns Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 }
 
 model Donations {
-  id        String   @id @default(uuid())
-  userId    String
-  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount    Int?
+  id           String       @id @default(uuid())
+  userId       String
+  user         Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount       Int?
   donationType DonationType
-  description String?
-  
+  description  String?
+
   // Donation in kind fields
-  isInKind Boolean @default(false)
-  itemName String?
-  itemImage String?
-  donorName String?
-  donorPhone String?
+  isInKind      Boolean @default(false)
+  itemName      String?
+  itemImage     String?
+  donorName     String?
+  donorPhone    String?
   pickupAddress String?
-  
+
   // Zakat specific fields
-  zakatYear Int?
+  zakatYear              Int?
   zakatCalculationMethod String? // "GOLD", "SILVER", "CASH", "INVESTMENTS", etc.
-  zakatAssetsValue Int?
-  
+  zakatAssetsValue       Int?
+
   // Fitrah specific fields
-  fitrahYear Int?
+  fitrahYear              Int?
   fitrahCalculationMethod String? // "DATES", "WHEAT", "BARLEY", "RAISINS", "CASH"
-  fitrahAmount Int?
-  
+  fitrahAmount            Int?
+
   // Transaction details
   transactionId String?
   paymentMethod String?
-  paymentStatus PaymentStatus @default(COMPLETED)
-  status    DonationStatus @default(COMPLETED)
-  
+  paymentStatus PaymentStatus  @default(COMPLETED)
+  status        DonationStatus @default(COMPLETED)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -99,4 +100,26 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+model Volunteers {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    Status   @default(PENDING)
+  fullName  String
+  phone     String
+  email     String
+  skills    String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

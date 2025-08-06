@@ -31,7 +31,9 @@ export class AppModule {
         { path: 'donations', method: RequestMethod.ALL },
         { path: 'donations/*', method: RequestMethod.ALL },
         { path: 'user', method: RequestMethod.ALL },
-        { path: 'user/*', method: RequestMethod.ALL }
+        { path: 'user/*', method: RequestMethod.ALL },
+        { path: 'volunteer', method: RequestMethod.ALL },
+        { path: 'volunteer/*', method: RequestMethod.ALL }
       );
   }
 }
