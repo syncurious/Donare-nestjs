@@ -103,7 +103,7 @@ export class DonationController {
   @HttpCode(HttpStatus.CREATED)
   async createZakatDonation(
     @Request() req,
-    @Body(new CustomValidationPipe()) donationDto: CreateDonationDto
+    @Body() donationDto: CreateDonationDto
   ) {
     if (!req.user || !req.user.userId) {
       throw new NotFoundException('User not authenticated');
@@ -125,7 +125,7 @@ export class DonationController {
   @HttpCode(HttpStatus.CREATED)
   async createSadaqahDonation(
     @Request() req,
-    @Body(new CustomValidationPipe()) donationDto: CreateDonationDto
+    @Body() donationDto: CreateDonationDto
   ) {
     if (!req.user || !req.user.userId) {
       throw new NotFoundException('User not authenticated');
@@ -147,7 +147,7 @@ export class DonationController {
   @HttpCode(HttpStatus.CREATED)
   async createFitrahDonation(
     @Request() req,
-    @Body(new CustomValidationPipe()) donationDto: CreateDonationDto
+    @Body() donationDto: CreateDonationDto
   ) {
     if (!req.user || !req.user.userId) {
       throw new NotFoundException('User not authenticated');
