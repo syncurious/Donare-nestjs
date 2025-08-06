@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { DonationModule } from './donation/donation.module';
 import { VolunteerModule } from './volunteer/volunteer.module';
 import { HelpRequestModule } from './help-request/help-request.module';
+import { CausesModule } from './causes/causes.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { HelpRequestModule } from './help-request/help-request.module';
     DonationModule,
     VolunteerModule,
     HelpRequestModule,
+    CausesModule,
   ],
 })
 export class AppModule {
@@ -37,7 +39,9 @@ export class AppModule {
         { path: 'volunteer', method: RequestMethod.ALL },
         { path: 'volunteer/*', method: RequestMethod.ALL },
         { path: 'help-request', method: RequestMethod.ALL },
-        { path: 'help-request/*', method: RequestMethod.ALL }
+        { path: 'help-request/*', method: RequestMethod.ALL },
+        { path: 'causes', method: RequestMethod.ALL },
+        { path: 'causes/*', method: RequestMethod.ALL },
       );
   }
 }
