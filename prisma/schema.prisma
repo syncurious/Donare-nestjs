@@ -43,16 +43,22 @@ model Donations {
   id        String   @id @default(uuid())
   userId    String
   user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount    Int
-  status    DonationStatus @default(COMPLETED)
+  amount    Int?
   donationType DonationType
   description String?
+  
+  // Donation in kind fields
+  isInKind Boolean @default(false)
+  itemName String?
+  itemImage String?
+  donorName String?
+  donorPhone String?
+  pickupAddress String?
   
   // Zakat specific fields
   zakatYear Int?
   zakatCalculationMethod String? // "GOLD", "SILVER", "CASH", "INVESTMENTS", etc.
   zakatAssetsValue Int?
-  
   
   // Fitrah specific fields
   fitrahYear Int?
@@ -63,6 +69,7 @@ model Donations {
   transactionId String?
   paymentMethod String?
   paymentStatus PaymentStatus @default(COMPLETED)
+  status    DonationStatus @default(COMPLETED)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

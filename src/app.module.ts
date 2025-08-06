@@ -26,6 +26,7 @@ export class AppModule {
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
+        { path: 'donations/(.*)', method: RequestMethod.ALL },
         { path: 'user/(.*)', method: RequestMethod.ALL }
       );
   }
