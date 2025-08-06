@@ -15,12 +15,16 @@ export class AuthMiddleware implements NestMiddleware {
             throw new UnauthorizedException('Invalid token format');
         }
 
-        const decodedToken = await this.tokenSr.decodeJWTToken(token)
-        if (!decodedToken) {
+        try {
+            const decodedToken = await this.tokenSr.decodeJWTToken(token)
+            if (!decodedToken || !decodedToken.userId) {
+                throw new UnauthorizedException("Invalid Token")
+            }
+            req['token'] = token;
+            req['user'] = decodedToken;
+            next();
+        } catch (error) {
             throw new UnauthorizedException("Invalid Token")
         }
-        req['token'] = token;
-        req['user'] = decodedToken
-        next();
     }
 }

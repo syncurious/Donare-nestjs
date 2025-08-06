@@ -6,6 +6,7 @@ import { PrismaModule } from './config/prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { CommonModule } from './common/common.module';
+import { DonationModule } from './donation/donation.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CommonModule } from './common/common.module';
     PrismaModule,
     UserModule,
     CommonModule,
+    DonationModule,
   ],
 })
 export class AppModule {
@@ -24,7 +26,10 @@ export class AppModule {
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
-        { path: 'user/(.*)', method: RequestMethod.ALL }
+        { path: 'donations', method: RequestMethod.ALL },
+        { path: 'donations/*', method: RequestMethod.ALL },
+        { path: 'user', method: RequestMethod.ALL },
+        { path: 'user/*', method: RequestMethod.ALL }
       );
   }
 }
