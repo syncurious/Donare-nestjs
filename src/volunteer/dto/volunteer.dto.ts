@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, IsEmail, IsEnum, IsUUID } from "class-validator";
 import { AvailabilityStatus, Status } from "generated/prisma/client";
 
 export class RegisterVolunteerDto {
@@ -10,7 +10,7 @@ export class RegisterVolunteerDto {
     @IsNotEmpty()
     phone: string;
 
-    @IsString()
+    @IsEmail()
     @IsNotEmpty()
     email: string;
 
@@ -18,11 +18,11 @@ export class RegisterVolunteerDto {
     @IsNotEmpty()
     skills: string;
 
-    @IsString()
+    @IsEnum(AvailabilityStatus)
     @IsNotEmpty()
     onWeekDays: AvailabilityStatus;
 
-    @IsString()
+    @IsEnum(AvailabilityStatus)
     @IsNotEmpty()
     onWeekEnds: AvailabilityStatus;
 
@@ -32,7 +32,13 @@ export class RegisterVolunteerDto {
 }
 
 export class UpdateVolunteerDto {
-    @IsString()
+    @IsEnum(Status)
     @IsNotEmpty()
     status: Status;
+}
+
+export class VolunteerIdDto {
+    @IsUUID()
+    @IsNotEmpty()
+    id: string;
 }
