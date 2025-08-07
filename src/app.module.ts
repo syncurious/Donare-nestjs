@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './config/prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { AdminMiddleware } from './common/middleware/admin.middleware';
 import { CommonModule } from './common/common.module';
 import { DonationModule } from './donation/donation.module';
 import { VolunteerModule } from './volunteer/volunteer.module';
@@ -42,6 +43,16 @@ export class AppModule {
         { path: 'help-request/*', method: RequestMethod.ALL },
         { path: 'causes', method: RequestMethod.ALL },
         { path: 'causes/*', method: RequestMethod.ALL },
+      )
+      .apply(AdminMiddleware)
+      .forRoutes(
+        { path: 'admin', method: RequestMethod.ALL },
+        { path: 'admin/*', method: RequestMethod.ALL },
+        { path: 'volunteer/admin/*', method: RequestMethod.ALL },
+        { path: 'donations/admin/*', method: RequestMethod.ALL },
+        { path: 'user/admin/*', method: RequestMethod.ALL },
+        { path: 'help-request/admin/*', method: RequestMethod.ALL },
+        { path: 'causes/admin/*', method: RequestMethod.ALL },
       );
   }
 }
