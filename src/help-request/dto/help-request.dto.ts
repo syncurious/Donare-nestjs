@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Status } from "generated/prisma";
 
 export class CreateHelpRequestDto {
     @IsString()
@@ -21,4 +22,10 @@ export class CreateHelpRequestDto {
     @IsString()
     @IsOptional()
     image: string;
+}
+
+export class UpdateHelpStatusDto {
+    @IsEnum(Status)
+    @IsNotEmpty()
+    status: Status;
 }
