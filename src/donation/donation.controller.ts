@@ -1,24 +1,23 @@
-import { 
-  Controller, 
-  Post, 
-  Get, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Param,
   Request,
   HttpCode,
   HttpStatus,
-  NotFoundException
+  NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { DonationService } from './donation.service';
-import { 
-  CreateDonationDto, 
-  DonationResponseDto, 
+import {
+  CreateDonationDto,
   UpdateDonationDto,
-  DonationType 
+  DonationType,
 } from './dto/donation.dto';
-import { CustomValidationPipe } from '../common/pipes/validation.pipe';
 import { ResponseService } from '../common/services/response.service';
 
 @Controller('donations')
@@ -26,7 +25,7 @@ export class DonationController {
   constructor(
     private readonly donationService: DonationService,
     private readonly responseService: ResponseService
-  ) {}
+  ) { }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -40,9 +39,9 @@ export class DonationController {
     const userId = req.user.userId;
     const donation = await this.donationService.createDonation(userId, donationDto);
     return this.responseService.formatResponse(
-      donation, 
-      'Donation created successfully', 
-      true, 
+      donation,
+      'Donation created successfully',
+      true,
       HttpStatus.CREATED
     );
   }
@@ -55,9 +54,9 @@ export class DonationController {
     const userId = req.user.userId;
     const donations = await this.donationService.getDonationsByUser(userId);
     return this.responseService.formatResponse(
-      donations, 
-      'Donations retrieved successfully', 
-      true, 
+      donations,
+      'Donations retrieved successfully',
+      true,
       HttpStatus.OK
     );
   }
@@ -66,9 +65,9 @@ export class DonationController {
   async getDonationById(@Param('id') id: string) {
     const donation = await this.donationService.getDonationById(id);
     return this.responseService.formatResponse(
-      donation, 
-      'Donation retrieved successfully', 
-      true, 
+      donation,
+      'Donation retrieved successfully',
+      true,
       HttpStatus.OK
     );
   }
@@ -80,9 +79,9 @@ export class DonationController {
   ) {
     const donation = await this.donationService.updateDonation(id, updateDto);
     return this.responseService.formatResponse(
-      donation, 
-      'Donation updated successfully', 
-      true, 
+      donation,
+      'Donation updated successfully',
+      true,
       HttpStatus.OK
     );
   }
@@ -91,9 +90,9 @@ export class DonationController {
   async deleteDonation(@Param('id') id: string) {
     await this.donationService.deleteDonation(id);
     return this.responseService.formatResponse(
-      null, 
-      'Donation deleted successfully', 
-      true, 
+      null,
+      'Donation deleted successfully',
+      true,
       HttpStatus.OK
     );
   }
@@ -114,9 +113,9 @@ export class DonationController {
     const userId = req.user.userId;
     const donation = await this.donationService.createDonation(userId, donationDto);
     return this.responseService.formatResponse(
-      donation, 
-      'Zakat donation created successfully', 
-      true, 
+      donation,
+      'Zakat donation created successfully',
+      true,
       HttpStatus.CREATED
     );
   }
@@ -136,9 +135,9 @@ export class DonationController {
     const userId = req.user.userId;
     const donation = await this.donationService.createDonation(userId, donationDto);
     return this.responseService.formatResponse(
-      donation, 
-      'Sadaqah donation created successfully', 
-      true, 
+      donation,
+      'Sadaqah donation created successfully',
+      true,
       HttpStatus.CREATED
     );
   }
@@ -158,10 +157,28 @@ export class DonationController {
     const userId = req.user.userId;
     const donation = await this.donationService.createDonation(userId, donationDto);
     return this.responseService.formatResponse(
-      donation, 
-      'Fitrah donation created successfully', 
-      true, 
+      donation,
+      'Fitrah donation created successfully',
+      true,
       HttpStatus.CREATED
     );
   }
+
+  @Get('admin/all')
+    async getAllHelpRequests(@Query('type') type: string) {
+        if (type) {
+            const validStatuses = Object.values(DonationType);
+            if (!validStatuses.includes(type as DonationType)) {
+                throw new NotFoundException('Invalid status value');
+            }
+        }
+        const helpRequests = await this.donationService.getAllDonations(type as DonationType);
+        return this.responseService.formatResponse(helpRequests, 'Help requests fetched successfully', true, HttpStatus.OK);
+    }
+
+    @Get('admin/:id')
+    async getHelpRequestById(@Param('id') id: string) {
+        const helpRequest = await this.donationService.getDonationsById(id);
+        return this.responseService.formatResponse(helpRequest, 'Help request fetched successfully', true, HttpStatus.OK);
+    }
 }

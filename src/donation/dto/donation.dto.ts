@@ -1,4 +1,5 @@
-import { IsEnum, IsNumber, IsOptional, IsString, IsInt, Min, Max, IsEmpty, IsBoolean, IsUrl, IsPhoneNumber } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, IsInt, Min, Max, IsEmpty, IsBoolean, IsUrl, IsPhoneNumber, IsNotEmpty } from 'class-validator';
+import { Status } from 'generated/prisma';
 
 export enum DonationType {
   ZAKAT = 'ZAKAT',
