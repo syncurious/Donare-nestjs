@@ -1,15 +1,15 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { ResponseService } from '../common/services/response.service';
-import { 
-  CreateDonationDto, 
-  DonationResponseDto, 
+import {
+  CreateDonationDto,
+  DonationResponseDto,
   UpdateDonationDto,
   DonationType,
   ZakatDonationDto,
   FitrahDonationDto,
   SadaqahDonationDto,
-  OtherDonationDto
+  OtherDonationDto,
 } from './dto/donation.dto';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class DonationService {
   constructor(
     private prisma: PrismaService,
     private responseService: ResponseService
-  ) {}
+  ) { }
 
   async createDonation(userId: string, donationDto: CreateDonationDto): Promise<DonationResponseDto> {
     // Validate donation in kind requirements
@@ -27,19 +27,35 @@ export class DonationService {
     switch (donationDto.donationType) {
       case DonationType.ZAKAT:
         return this.createZakatDonation(userId, donationDto as ZakatDonationDto);
-      
+
       case DonationType.FITRAH:
         return this.createFitrahDonation(userId, donationDto as FitrahDonationDto);
-      
+
       case DonationType.SADAQAH:
         return this.createSadaqahDonation(userId, donationDto as SadaqahDonationDto);
-      
+
       case DonationType.OTHER:
         return this.createOtherDonation(userId, donationDto as OtherDonationDto);
-      
+
       default:
         throw new Error(`Unsupported donation type: ${(donationDto as any).donationType}`);
     }
+  }
+
+  async getAllDonations(type?: DonationType) {
+    return this.prisma.donations.findMany({
+      where: {
+        donationType : type
+      }
+    });
+  }
+
+  async getDonationsById(Id?: string) {
+    return this.prisma.donations.findMany({
+      where: {
+        id: Id
+      }
+    });
   }
 
   private validateDonationInKind(donationDto: CreateDonationDto): void {
