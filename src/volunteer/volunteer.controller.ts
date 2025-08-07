@@ -1,7 +1,8 @@
-import { Body, Controller, Get, HttpStatus, NotFoundException, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Post, Query, Request } from '@nestjs/common';
 import { VolunteerService } from './volunteer.service';
 import { RegisterVolunteerDto } from './dto/volunteer.dto';
 import { ResponseService } from 'src/common/services/response.service';
+import { Status } from 'generated/prisma/client';
 
 @Controller('volunteer')
 export class VolunteerController {
@@ -33,6 +34,17 @@ export class VolunteerController {
         }
         const userId = req.user.userId
         const response = await this.volunteerService.getMyForm(userId)
+        return this.res.formatResponse(
+            response,
+            'Success',
+            true,
+            HttpStatus.OK
+        );
+    }
+
+    @Get('admin/all')
+    async getAllVolunteers(@Query('status') status: Status) {
+        const response = await this.volunteerService.getAllVolunteers(status)
         return this.res.formatResponse(
             response,
             'Success',

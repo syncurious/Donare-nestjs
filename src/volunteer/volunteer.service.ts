@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RegisterVolunteerDto } from './dto/volunteer.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { Status } from 'generated/prisma/client';
 
 @Injectable()
 export class VolunteerService {
@@ -29,5 +30,14 @@ export class VolunteerService {
             where: { userId },
         });
         return volunteer;
+    }
+    async getAllVolunteers(status: Status) {
+        const volunteers = await this.prisma.volunteers.findMany({
+            where: { status },
+            include: {
+                user: true,
+            },
+        });
+        return volunteers;
     }
 }
