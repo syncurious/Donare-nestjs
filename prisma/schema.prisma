@@ -112,6 +112,11 @@ enum Status {
   CANCELLED
 }
 
+enum AvailabilityStatus {
+  AVAILABLE
+  NOT_AVAILABLE
+}
+
 model Volunteers {
   id        String   @id @default(uuid())
   userId    String   @unique
@@ -121,6 +126,8 @@ model Volunteers {
   phone     String
   email     String
   skills    String
+  onWeekDays AvailabilityStatus
+  onWeekEnds AvailabilityStatus
   message   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

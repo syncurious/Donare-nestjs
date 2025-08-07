@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString } from "class-validator";
+import { AvailabilityStatus } from "generated/prisma/client";
 
 export class RegisterVolunteerDto {
     @IsString()
@@ -16,6 +17,14 @@ export class RegisterVolunteerDto {
     @IsString()
     @IsNotEmpty()
     skills: string;
+
+    @IsString()
+    @IsNotEmpty()
+    onWeekDays: AvailabilityStatus;
+
+    @IsString()
+    @IsNotEmpty()
+    onWeekEnds: AvailabilityStatus;
 
     @IsString()
     @IsNotEmpty()
