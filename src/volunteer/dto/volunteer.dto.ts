@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from "class-validator";
-import { AvailabilityStatus } from "generated/prisma/client";
+import { AvailabilityStatus, Status } from "generated/prisma/client";
 
 export class RegisterVolunteerDto {
     @IsString()
@@ -29,4 +29,10 @@ export class RegisterVolunteerDto {
     @IsString()
     @IsNotEmpty()
     message: string;
+}
+
+export class UpdateVolunteerDto {
+    @IsString()
+    @IsNotEmpty()
+    status: Status;
 }

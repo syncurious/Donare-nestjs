@@ -1,6 +1,6 @@
-import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { VolunteerService } from './volunteer.service';
-import { RegisterVolunteerDto } from './dto/volunteer.dto';
+import { RegisterVolunteerDto, UpdateVolunteerDto } from './dto/volunteer.dto';
 import { ResponseService } from 'src/common/services/response.service';
 import { Status } from 'generated/prisma/client';
 
@@ -45,6 +45,30 @@ export class VolunteerController {
     @Get('admin/all')
     async getAllVolunteers(@Query('status') status: Status) {
         const response = await this.volunteerService.getAllVolunteers(status)
+        return this.res.formatResponse(
+            response,
+            'Success',
+            true,
+            HttpStatus.OK
+        );
+    }
+
+    @Get('admin/all/:id')
+    async getVolunteerById(@Param('id') id: string) {
+        const response = await this.volunteerService.getVolunteerById(id)
+        return this.res.formatResponse(
+            response,
+            'Success',
+            true,
+            HttpStatus.OK
+        );
+    }
+    @Patch('admin/all/:id')
+    async updateToVolunteer(@Param('id') id: string, @Body() body: UpdateVolunteerDto) {
+        const response = await this.volunteerService.updateToVolunteer(id, body)
+        if (!response) {
+            throw new NotFoundException('Volunteer not found');
+        }
         return this.res.formatResponse(
             response,
             'Success',

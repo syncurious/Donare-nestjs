@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { RegisterVolunteerDto } from './dto/volunteer.dto';
+import { RegisterVolunteerDto, UpdateVolunteerDto } from './dto/volunteer.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Status } from 'generated/prisma/client';
 
@@ -39,5 +39,18 @@ export class VolunteerService {
             },
         });
         return volunteers;
+    }
+    async getVolunteerById(id: string) {
+        const volunteer = await this.prisma.volunteers.findUnique({
+            where: { id },
+        });
+        return volunteer;
+    }
+    async updateToVolunteer(id: string, body: UpdateVolunteerDto) {
+        const volunteer = await this.prisma.volunteers.update({
+            where: { id },
+            data: body,
+        });
+        return volunteer;
     }
 }
