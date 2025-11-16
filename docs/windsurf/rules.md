@@ -1,0 +1,148 @@
+# Windsurf Rules for donare-backend
+
+- **Overview**
+  - NestJS backend with Prisma (PostgreSQL) and optional Supabase client.
+  - Validation via `class-validator` and `class-transformer` on DTOs.
+  - Auth via JWT (`TokenService`), global config via `ConfigModule` + `EnvConfigService`.
+  - Standardized responses via `ResponseService`.
+  - Route protection via `AuthMiddleware` and `AdminMiddleware`.
+
+- **Folder Structure**
+  - Root
+    - `.env`, `.gitignore`, `README.md`, `package.json`, `eslint.config.mjs`, `nest-cli.json`, `tsconfig*.json`, `.prettierrc`
+    - `prisma/`
+      - `schema.prisma` (generator outputs to `generated/prisma`)
+    - `generated/prisma/` (Prisma client output)
+    - `src/`
+      - `main.ts`
+      - `app.module.ts`
+      - `app.controller.ts`, `app.service.ts`
+      - `common/`
+        - `config/env.config.ts` (typed env, validation, getters)
+        - `middleware/`
+          - `auth.middleware.ts` (validates JWT, attaches `req['token']` and `req['user']`)
+          - `admin.middleware.ts` (requires `Role.ADMIN`)
+        - `services/`
+          - `token.service.ts` (JWT sign/verify/decode)
+          - `encryption.service.ts` (password hashing/compare)
+          - `response.service.ts` (uniform response shape)
+        - `utils/validation.utils.ts` (email/password regex; sanitize)
+      - `config/`
+        - `prisma/`
+          - `prisma.module.ts` (@Global module exporting PrismaService)
+          - `prisma.service.ts` (extends PrismaClient; connect/disconnect life-cycle)
+        - `supabase/`
+          - `supabase.module.ts` (exports `SupabaseService`)
+          - `supabase.service.ts` (creates client via `SUPABASE_URL`/`SUPABASE_KEY`)
+      - Feature modules (each: `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`)
+        - `auth/`
+          - `auth.controller.ts`, `auth.service.ts`, `auth.module.ts`
+          - `dto/`: `signin.dto.ts`, `signup.dto.ts`, `refresh-token.dto.ts`, `auth-response.dto.ts`, `userPreference.dto.ts`
+          - `enums/`: `role.enum.ts`
+        - `user/`
+          - `user.controller.ts`, `user.service.ts`, `user.module.ts`, `dto/user.dto.ts`
+        - `donation/`
+          - `donation.controller.ts`, `donation.service.ts`, `donation.module.ts`, `dto/donation.dto.ts`
+        - `volunteer/`
+          - `volunteer.controller.ts`, `volunteer.service.ts`, `volunteer.module.ts`, `dto/volunteer.dto.ts`
+        - `help-request/`
+          - `help-request.controller.ts`, `help-request.service.ts`, `help-request.module.ts`, `dto/help-request.dto.ts`
+        - `causes/`
+          - `causes.controller.ts`, `causes.service.ts`, `causes.module.ts`, `dto/causes.dto.ts`
+
+- **Environment Configuration** (`src/common/config/env.config.ts`)
+  - Required
+    - `DATABASE_URL`, `JWT_SECRET`, `PORT`, `NODE_ENV`
+  - Optional
+    - `JWT_EXPIRES_IN` (default `24h`), `SUPABASE_URL`, `SUPABASE_KEY`
+  - Access via getters: `databaseUrl`, `jwtSecret`, `jwtExpiresIn`, `port`, `nodeEnv`, `isDevelopment`, `isProduction`, `isTest`, `supabaseUrl`, `supabaseKey`.
+
+- **Prisma**
+  - `prisma/schema.prisma`
+    - `generator client` outputs to `../generated/prisma`.
+    - `datasource db` uses provider `postgresql` with `DATABASE_URL`.
+    - Models: `Users`, `UserPreferences`, `Donations`, `Volunteers`, `HelpRequests`, `Causes`.
+    - Enums: `DonationType`, `DonationStatus`, `PaymentStatus`, `Status`, `AvailabilityStatus`, `MediaType`.
+  - `PrismaService` extends `PrismaClient`; connects on module init, disconnects on destroy.
+  - `PrismaModule` is `@Global` so `PrismaService` can be injected app-wide.
+  - Usage examples
+    - `this.prisma.users.findUnique({...})`
+    - `this.prisma.users.create({...})`
+
+- **Supabase**
+  - `SupabaseService` builds a `SupabaseClient` with `SUPABASE_URL` and `SUPABASE_KEY`.
+  - Throws explicit errors if env vars are missing.
+  - `SupabaseModule` exports the service; inject via constructor where needed.
+
+- **Validation + DTOs**
+  - Use `class-validator` decorators on DTOs (e.g., `@IsEmail`, `@IsString`, `@IsEnum`, `@ValidateNested`).
+  - Use `class-transformer` `@Type` for nested DTOs.
+  - `ValidationUtils` for additional checks: `isValidEmail`, `isValidPassword`, `sanitizeString`.
+  - Pattern: controllers accept `@Body() <Dto>`; services implement logic; optional global ValidationPipe (if added) or rely on DTO validation in controllers.
+
+- **Request/Response Patterns**
+  - Controllers
+    - Prefix per feature (e.g., `@Controller('auth')`).
+    - Actions: `@Post('signup')`, `@Post('signin')`, etc.; accept DTOs; call service; return results.
+  - Responses
+    - Use `ResponseService.formatResponse<T>(data, message?, status?, statusCode?)` for uniform responses when standardization is desired.
+    - Auth signin returns a `LoginResponseDTO` with `token`, `refrashToken`, and `user` (`UserResponseDto`).
+  - Errors
+    - Throw Nest exceptions: `BadRequestException`, `ConflictException`, `NotFoundException`, `UnauthorizedException`, `ForbiddenException`, `InternalServerErrorException`.
+
+- **Auth & Security**
+  - `TokenService`
+    - `generateJWTToken(payload, secretKey, expiresIn = '24h')`
+    - `verifyJWTToken(token, secretKey)` returns payload or throws error.
+    - `decodeJWTToken(token)` returns payload without verification.
+  - `AuthMiddleware`
+    - Expects `Authorization: Bearer <token>`.
+    - Decodes token, expects payload with `userId`; sets `req['token']`, `req['user']`.
+  - `AdminMiddleware`
+    - Requires `req['user'].role === Role.ADMIN`.
+  - `AppModule` routing protection
+    - `AuthMiddleware` applied to: `donations/*`, `user/*`, `volunteer/*`, `help-request/*`, `causes/*`.
+    - `AdminMiddleware` applied to: `admin/*`, and `*/admin/*` under `volunteer`, `donations`, `user`, `help-request`, `causes`.
+
+- **Module Wiring**
+  - `AppModule` imports
+    - `ConfigModule.forRoot({ isGlobal: true })`
+    - `SupabaseModule`, `AuthModule`, `PrismaModule`, `UserModule`, `CommonModule`, `DonationModule`, `VolunteerModule`, `HelpRequestModule`, `CausesModule`.
+  - Middleware configured in `configure(consumer: MiddlewareConsumer)`.
+
+- **Coding Conventions**
+  - Use DTOs + `class-validator` for input validation.
+  - Keep controllers thin; put business logic in services.
+  - Prefer `EnvConfigService` over direct `process.env` usage in business code.
+  - Use `ResponseService` for normalized responses when appropriate.
+  - Use enums for roles/status values.
+  - Prisma schema is the source of truth for models; use migrations and `prisma generate`.
+  - JWT payload typically contains `{ userId, email, role }`.
+
+- **Setup & Bootstrap**
+  - Install deps: `npm ci` or `npm install`.
+  - Configure `.env` with at least `DATABASE_URL`, `JWT_SECRET`, `PORT`, `NODE_ENV`.
+  - Generate Prisma client: `npx prisma generate` (ensures `generated/prisma` matches schema).
+  - Apply migrations/seed (if present), then start Nest app: `npm run start:dev` or `npm run start:prod`.
+
+- **Replication Checklist for New Projects**
+  - Copy the folder skeleton from this rules file into the new repo.
+  - Copy `src/common` (config, services, middleware, utils) and adjust namespacing if needed.
+  - Copy `src/config/prisma` and `prisma/schema.prisma`; run `npx prisma generate` and update models.
+  - Add `src/config/supabase` only if using Supabase in the new project.
+  - Set up `EnvConfigService` and `ConfigModule` boilerplate.
+  - Implement feature modules with controller/service/dto; wire in `AppModule`.
+  - Apply `AuthMiddleware`/`AdminMiddleware` to appropriate routes.
+  - Use `ResponseService` for standardized responses.
+  - Provide `JWT_SECRET`, set `JWT_EXPIRES_IN` if different from default.
+  - Validate inputs using DTOs and `ValidationUtils` as needed.
+
+- **Example Endpoints (Patterns)**
+  - Auth Signup: `POST /auth/signup`
+    - Validate with `SignupDto` + `ValidationUtils`.
+    - Create `Users` + optional `UserPreferences`.
+    - Return created summary with `statusCode: 201`.
+  - Auth Signin: `POST /auth/signin`
+    - Validate with `SigninDto` + `ValidationUtils`.
+    - Verify password; issue `token` and `refrashToken` via `TokenService`.
+    - Return `LoginResponseDTO` structure.
